@@ -1,0 +1,11 @@
+<li id="zhitiao-<%= zhitiao.id %>">
+    <!--%= link_to gravatar_for(zhitiao.user, size: 50), zhitiao.user %-->
+    <span class="user"><%= link_to zhitiao.user.name, zhitiao.user %></span>
+    <span class="content"><%= zhitiao.content %></span>
+    <span class="timestamp">
+        Posted <%= time_ago_in_words(zhitiao.created_at) %> ago.
+        <% if current_user?(zhitiao.user) %>
+            <%= link_to "delete", zhitiao, method: :delete,data: { confirm: "You sure?" } %>
+        <% end %>
+    </span>
+</li>

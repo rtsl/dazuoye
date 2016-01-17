@@ -6,5 +6,30 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+ 
+# 如用户已登录，返回true
+def is_logged_in?
+!session[:user_id].nil?
 end
+# 登入测试用户
+def log_in_as(user, options = {})
+  password = options[:password] || 'password'
+  remember_me = options[:remember_me] || '1'
+  if integration_test?
+    post login_path, session: { email: user.email,
+    password: password,
+    remember_me: remember_me }
+  else
+    session[:user_id] = user.id
+  end
+end
+  private
+# 集成测试中返回 true
+  def integration_test?
+    defined?(post_via_redirect)
+  end
+end
+
+end
+  
+

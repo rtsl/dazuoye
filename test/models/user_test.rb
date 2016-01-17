@@ -1,0 +1,54 @@
+require 'test_helper'
+class UserTest < ActiveSupport::TestCase
+  def setup
+    @user = User.new(name: "Example User", email: "user@example.com",
+                      password: "foobar", password_confirmation: "foobar")
+  end
+    test "should be valid" do
+    assert @user.valid?
+    end
+    
+    test "name should be present" do
+    @user.name = " "
+    assert_not @user.valid?
+    end
+    
+    test "email validation should reject invalid addresses" do
+      invalid_addresses = %w[user@example,com user_at_foo.org user.name@example.
+      foo@bar_baz.com foo@bar+baz.com]
+        invalid_addresses.each do |invalid_address|
+        @user.email = invalid_address
+        assert_not @user.valid?, "#{invalid_address.inspect} should be invalid"
+        end
+      end
+      
+    test "email addresses should be unique" do
+      duplicate_user = @user.dup
+      duplicate_user.email = @user.email.upcase
+      @user.save
+      assert_not duplicate_user.valid?
+    end
+    
+    
+    #删除用户时纸条的变化
+    test "associated zhitiaos should be destroyed" do
+      @user.save
+      @user.zhitiaos.create!(content: "Lorem ipsum")
+      assert_difference 'ZhitiaoTest.count', -1 do
+        @user.destroy
+      end
+    end
+    
+    #测试关注用户
+    test "should follow and unfollow a user" do
+      michael = users(:michael)
+      archer = users(:archer)
+      assert_not michael.following?(archer)
+      michael.follow(archer)
+      assert archer.followers.include?(michael)
+      michael.unfollow(archer)
+      assert_not michael.following?(archer)
+    end
+    
+    
+end
