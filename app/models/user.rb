@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
     
     def feed
         following_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id"
-        Zhitiao.where("user_id IN (:following_ids) OR user_id = :user_id",following_ids: following_ids, user_id: user)
+        Zhitiao.where("user_id IN(#{following_ids}) OR user_id = :user_id",user_id: id)
     end
     
     def follow(other_user)
